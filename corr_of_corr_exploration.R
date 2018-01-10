@@ -57,7 +57,8 @@ final <- filter(mut_ppi_only, grepl("_GO_", cluster))
 for (c in unique(final$cluster_number)) {
   ggplot(data = final[which(final$cluster_number == c),], aes(x=mutant, y=protein, fill=value)) + 
         geom_tile() +
-        labs(title=final[which(final$cluster_number == c),]$cluster)
+        labs(title=final[which(final$cluster_number == c),]$cluster) +
+        scale_fill_gradient(low = "purple", high = "pink")
   ggsave(filename=paste(output_path, c, "_", method, "_protein_v_mutant", ".png", sep=""), width = 10, height = 10)
   }
 
@@ -65,10 +66,11 @@ for (c in unique(final$cluster_number)) {
 for (p in unique(final$protein)) {
   ggplot(data = final[which(final$protein == p),], aes(x=mutant, y=cluster, fill=value)) + 
     geom_tile() +
-    labs(title=p)
+    labs(title=p) +
+    scale_fill_gradient(low = "purple", high = "pink")
   ggsave(filename=paste(output_path, p, "_", method, "_cluster_v_mutant", ".png", sep=""), width = 10, height = 10)
 }
 
-#write.table(final, file=paste(output_path, method, "_final.csv"), quote=FALSE, sep=",", row.names=FALSE)
+# write.table(final, file=paste(output_path, method, "_final.csv"), quote=FALSE, sep=",", row.names=FALSE)
 
 
