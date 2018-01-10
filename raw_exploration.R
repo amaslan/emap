@@ -1,3 +1,7 @@
+# Generate raw e-map score vs. mutant plots (one plot per complex).
+# Only include complexes that have at least one protein with an E-MAP
+# score outside of [-3, 2] and WT in [-3, 2].
+
 library(ggplot2)
 library(dplyr)
 
@@ -68,7 +72,3 @@ for (c in unique(final$Complex)) {
   ggsave(filename=paste(output_path, i, "_raw_emap", ".png", sep=""), width = 10, height = 10)
   i=i+1
 }
-
-
-# look at just the WT and the mutations for which we have data
-mut_data <- c("GSP1-NAT", "T34E", "R108L", "H141V", "Q147E")
