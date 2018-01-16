@@ -2,8 +2,7 @@
 # Only include complexes that have at least one protein with an E-MAP
 # score outside of [-3, 2] and WT in [-3, 2].
 
-library(ggplot2)
-library(dplyr)
+library(tidyverse)
 
 raw_emap = "/Users/annie/emap/June2016_Gsp1_E-MAP_data.RData"
 complex_def = "/Users/annie/emap/CYC2008_complex.tab.txt"
