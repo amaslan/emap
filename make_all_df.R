@@ -1,14 +1,15 @@
-# plot raw E-MAP score vs. MDS distance or number of edges between genes
-# do we produce a similar plot to Collins, et al.?
+# create single data frame with: (1) raw e-map, (2) corr of corr,
+# (3) complex, (4) interface
 
 library(tidyverse)
 
+# paths to all input files for df
 raw_emap = "/Users/annie/emap/June2016_Gsp1_E-MAP_data.RData"
 corr_of_corr = "/Users/annie/emap/corr_of_corr.RData"
-
 complex_def = "/Users/annie/emap/CYC2008_complex.tab.txt"
 interface_def = "/Users/annie/emap/alanine_scanning.txt"
 
+# method for correlation of correlations file
 method = "corr_of_corr_no_na_no_mut"
 
 ########################################
@@ -66,49 +67,17 @@ all <- merge(all, sep, by="gene_mut", all=TRUE)
 
 # merge all with interface based on residue number + protein
 interface_short$residue_protein <- paste(interface_short$index, "-", interface_short$protein)
-by_residue_protein <- group_by(interface_short, residue_protein)
-interface_clean <- summarize(by_residue_protein, score_max = max(abs(score)))
-
 all$residue <- parse_number(all$mutant.y)
 all$residue_protein <- paste(all$residue, "-", all$protein)
-all <- merge(all, interface_clean, by="residue_protein", all=TRUE)
+all <- merge(all, interface_short, by="residue_protein", all=TRUE)
 
 # cleanup and save dataframe
-drop <- c("library_ORF", "mutant.x", "library_gene_name", "Name")
-all <- all[,!(names(all) %in% drop)]
+names(all)[names(all) == "mutant.x"] <- "mutant.emap"
 names(all)[names(all) == "mutant.y"] <- "mutant"
-names(all)[names(all) == "score"] <- "raw.emap"
-names(all)[names(all) == "score_max"] <- "interface.score"
+names(all)[names(all) == "score.x"] <- "raw.emap"
+names(all)[names(all) == "score.y"] <- "interface.score"
 names(all)[names(all) == "value"] <- "corr.value"
+names(all)[names(all) == "protein.x"] <- "protein"
 
 all$gene_mut_cluster <- paste(all$gene_mut, "-", all$cluster)
-all <- all[!duplicated(all),]
 saveRDS(all, file="/Users/annie/emap/all.rds")
-
-########################################
-
-# # filter
-# # interface.score +/-0.5 cutoff
-# ggplot(data=all, aes(x=interface.score)) +
-#   geom_histogram(aes(y=..density..), color="black", fill="white") +
-#   geom_density(alpha=.2, fill="#FF6666") +
-#   geom_vline(aes(xintercept=mean(all$interface.score)), color="blue", linetype="dashed", size=1) +
-#   labs(x="interface score") +
-#   theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
-# 
-# # this filter results in keeping 10.9% of the data
-# all_interface <- filter(all, interface.score > 0.5 | interface.score < -0.5)
-# 
-# # filter for raw e.map scores > 2 or < -3
-# all_raw <- filter(all, raw.emap > 2 | raw.emap < -3)
-#   
-# plot(all_interface$interface.score, all_interface$corr.value)
-# plot(all$corr.value, all$raw.emap)
-# 
-# ggplot(data = all_raw) + 
-#   #geom_point(mapping = aes(x = displ, y = hwy)) +
-#   geom_smooth(mapping = aes(x = corr.value, y = raw.emap), na.rm = TRUE)
-# 
-# plot(all_raw$corr.value, all_raw$raw.emap)
-
-
