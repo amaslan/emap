@@ -11,8 +11,6 @@ output_path = "/Users/annie/emap/20180118/"
 
 all = readRDS(all_rds)
 
-# remove duplicates that arise because multiple interface scores of 0
-#all <- all[!duplicated(all),]
 # remove complex and interface scores info so don't have duplicate correlation of correlation entries
 all <- all[,!(names(all) == "Complex")]
 all <- all[,!(names(all) == "interface.score")]
