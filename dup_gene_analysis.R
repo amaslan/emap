@@ -91,3 +91,38 @@ ggplot(data=final, aes(x=min.val, y=max.val)) +
 
 mean(final$diff)
 quantile(final$diff)
+
+############################################################################
+# show what the different experiments are, e.g. DAMP, temperature
+# use strongest corr of corr unless check to see if construct with greatest strength
+# varies by mutant then keep both and treat as different genes
+
+output_path = "/Users/annie/emap/20180126/"
+
+# start with all_no_na_dups which also includes merged clusters
+for (p in dup_genes) {
+  all_no_na_p <- all_no_na_dups %>% filter(protein == p)
+  ggplot(all_no_na_p, aes(x=partner, y=corr.value)) +
+    geom_boxplot(colour = "#1F3552", fill = "#4271AE",
+                 size = 1) +
+    #geom_jitter() +
+    labs(title=c) +
+    theme_bw() +
+    geom_hline(yintercept = 0, colour="red") +
+    theme(panel.grid.major = element_line(colour = "#d3d3d3"),
+            panel.grid.minor = element_blank(),
+            panel.border = element_blank(),
+            panel.background = element_blank(),
+            plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
+            text=element_text(family = "Tahoma"),
+            axis.title = element_text(face="bold"),
+            axis.text.x = element_text(colour="black", size = 11),
+            axis.text.y = element_text(colour="black", size = 9),
+            axis.line = element_line(size=0.5, colour = "black"))
+    ggsave(filename=paste(output_path, p, "_duplicate_boxplot", ".png", sep=""), width = 10, height = 10)
+}
+
+# boxplots of difference in values by mutant between construct with highest mean 
+# corr of corr and each other construct for that gene
+
+
