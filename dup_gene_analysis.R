@@ -122,7 +122,49 @@ for (p in dup_genes) {
     ggsave(filename=paste(output_path, p, "_duplicate_boxplot", ".png", sep=""), width = 10, height = 10)
 }
 
-# boxplots of difference in values by mutant between construct with highest mean 
-# corr of corr and each other construct for that gene
+
+# top$partner has the constructs with the max(mean abs(corr.value)) for each protein
+by_construct <- all_no_na_dups %>%
+  group_by(protein, partner)
+summary_construct <- dplyr::summarize(by_construct, 
+                                      med.val = median(abs(corr.value)),
+                                      mean.val = mean(abs(corr.value)))
+top <- 
+  summary_construct %>% 
+  group_by(protein) %>% 
+  top_n(1, (mean.val))
+  #top_n(1, (med.val))
+
+# get what the corr.value is for each gene_mut_cluster for top constructs
+all_no_na_dups_top <- filter(all_no_na_dups, partner %in% top$partner)
+top_by_gene_mut_cluster <- group_by(all_no_na_dups_top, gene_mut_cluster)
+summary_top_gene_mut_cluster <- dplyr::summarize(top_by_gene_mut_cluster, 
+                                              top.val = abs(corr.value))
+
+# calculate delta = abs(max partner corr.value) - abs(each other construct corr.value)
+all_no_na_dups_final <- merge(all_no_na_dups, summary_top_gene_mut_cluster, by="gene_mut_cluster", all=TRUE)
+all_no_na_dups_final$delta <- all_no_na_dups_final$top.val - abs(all_no_na_dups_final$corr.value)
+
+# plot deltas for all
+ggplot(data=all_no_na_dups_final, aes(x=delta)) +
+  geom_histogram(aes(y=..density..), color="black", fill="white", bins=100) +
+  geom_density(alpha=.2, fill="#FF6666") +
+  geom_vline(aes(xintercept=mean(all_no_na_dups_final$delta)), color="blue", linetype="dashed", size=1) +
+  labs(x="abs(max partner corr.value) - abs(each other construct corr.value)") +
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+# plot deltas by protein
+for (p in unique(all_no_na_dups_final$protein)) {
+  sub <- all_no_na_dups_final[which(all_no_na_dups_final$protein == p & !(all_no_na_dups_final$partner %in% top$partner)),]
+  ggplot(data=sub, aes(x=delta)) +
+    geom_histogram(aes(y=..density..), color="black", fill="white", bins=100) +
+    geom_density(alpha=.2, fill="#FF6666") +
+    geom_vline(aes(xintercept=mean(sub$delta, na.rm=TRUE)), color="blue", linetype="dashed", size=1) +
+    labs(x="abs(max partner corr.value) - abs(each other construct corr.value)", title=p) +
+    theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
+  ggsave(filename=paste(output_path, p, "_duplicate_histogram", ".png", sep=""), width = 10, height = 10)
+}
+
+#summary(all_no_na_dups_final[which(all_no_na_dups_final$protein == p & !(all_no_na_dups_final$partner %in% top$partner)),]$delta)
 
 

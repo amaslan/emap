@@ -1,6 +1,7 @@
 # plot the various metrics in all df
 
 interface_def = "/Users/annie/emap/alanine_scanning.txt"
+output_path = "/Users/annie/emap/20180130/"
 
 # interface: (1) index	(2) yeast_index	(3) yeast_wt_aa	(4) pdb	(5) protein	(6) structure	(7) pdb_res_num	(8) pdb_wt_aa	(9) score
 # e.g.: 1    34          34           T  3a6p    MSN5  MSN5(3a6p)          32       THR 0.000
@@ -28,6 +29,14 @@ ggplot(data=interface_short, aes(x=score)) +
 # this filter results in keeping 14.2% of the data
 # residue is at interface with a given protein if it's in interface_short_filtered
 interface_short_filtered <- filter(interface_short, score > 0.5 | score < -0.5)
+mog1_residues <- c(97, 108, 132, 134, 136, 128, 133, 138)
+interface_mog1 <- data.frame(matrix(ncol = 4, nrow = length(mog1_residues)))
+colnames(interface_mog1) <- colnames(interface_short_filtered)
+interface_mog1$index <- mog1_residues
+interface_mog1$protein <- "MOG1"
+interface_mog1$score <- NA
+interface_mog1$index_protein <- paste(interface_mog1$index, "-", interface_mog1$protein)
+interface_short_filtered <- rbind(interface_short_filtered, interface_mog1)
 
 # for given cluster - protein, boxplot comparison of correlation of correlations whether at interface or not
 # determine distribution of correlation of correlations
