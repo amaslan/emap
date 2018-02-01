@@ -22,17 +22,32 @@ all <- e.map
 na_removed <- filter(all, !is.na(score))
 
 res <- boxplot(score ~ mutant, data = na_removed)
-res_df <- as.data.frame(t(res$stats[c(1,5),]))
+res_df <- as.data.frame(t(res$stats))
 rownames(res_df) <- res$names
-colnames(res_df) <- c("lower_whisker", "upper_whisker")
+colnames(res_df) <- c("lower_whisker", "lower_quartile", "median", "upper_quartile", "upper_whisker")
 
 ggplot(data = res_df) +
   geom_point(mapping = aes(x=lower_whisker, y=upper_whisker)) +
   geom_abline(slope=-1, intercept=0) +
   geom_vline(xintercept=-2, color="red") +
   theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  labs(title = "upper and lower whisker for e-map score by mutant; y=x shown")
-  
+  labs(title = "upper and lower whisker for e-map score by mutant; y=-x shown")
+
+ggplot(data = res_df) +
+  geom_point(mapping = aes(x=lower_quartile, y=upper_quartile)) +
+  geom_abline(slope=-1, intercept=0) +
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  labs(title = "upper and lower quartile for e-map score by mutant; y=-x shown")
+
+ggplot(data = res_df) +
+  geom_point(mapping = aes(x=upper_whisker, y=upper_quartile)) +
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  labs(title = "upper quartile and upper whisker for e-map score by mutant")
+
+ggplot(data = res_df) +
+  geom_point(mapping = aes(x=lower_whisker, y=lower_quartile)) +
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  labs(title = "lower quartile and lower whisker for e-map score by mutant")
 
 #strong <- subset(res_df, lower_whisker < -3 | upper_whisker > 2)
 strong <- subset(res_df, lower_whisker < -2)
@@ -42,4 +57,22 @@ strong <- subset(res_df, lower_whisker < -2)
 strong$mutant <- rownames(strong)
 strong_noWT <- subset(strong, !grepl("_WT", mutant))
 strong_muts <- rownames(strong_noWT)
+
+# show what -2 cutoff for lower quartile looks like in distribution
+
+ggplot(data=res_df, aes(x=lower_whisker)) +
+  geom_histogram(aes(y=..density..), color="black", fill="white") +
+  geom_density(alpha=.2, fill="#FF6666") +
+  geom_vline(aes(xintercept=mean(res_df$lower_whisker)), color="blue", linetype="dashed", size=1) +
+  geom_vline(aes(xintercept=-2), color="red", size=1) +
+  labs(x="E-MAP score lower whisker") +
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+ggplot(data=res_df, aes(x=upper_whisker)) +
+  geom_histogram(aes(y=..density..), color="black", fill="white") +
+  geom_density(alpha=.2, fill="#FF6666") +
+  geom_vline(aes(xintercept=mean(res_df$upper_whisker)), color="blue", linetype="dashed", size=1) +
+  geom_vline(aes(xintercept=1.71), color="red", size=1) +
+  labs(x="E-MAP score upper whisker") +
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
