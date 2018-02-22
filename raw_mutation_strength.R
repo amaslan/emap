@@ -13,12 +13,7 @@ load(raw_emap)
 
 all <- e.map
 
-# filter: only interested in complexes for which there is at least one protein with 
-# min < -3 or max > 2 and WT in [-3, 2]
-
 # remove proteins for which we don't have e-map score
-# proteins: 1627 --> 565
-# complexes: 408 --> 259
 na_removed <- filter(all, !is.na(score))
 
 res <- boxplot(score ~ mutant, data = na_removed)
@@ -28,6 +23,14 @@ colnames(res_df) <- c("lower_whisker", "lower_quartile", "median", "upper_quarti
 
 ggplot(data = res_df) +
   geom_point(mapping = aes(x=lower_whisker, y=upper_whisker)) +
+  geom_abline(slope=-1, intercept=0) +
+  geom_vline(xintercept=-2, color="red") +
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  labs(title = "upper and lower whisker for e-map score by mutant; y=-x shown")
+
+ggplot(data = res_df, aes(x=lower_whisker, y=upper_whisker)) +
+  geom_point() +
+  geom_smooth(method=lm, se=FALSE, fullrange=TRUE) +
   geom_abline(slope=-1, intercept=0) +
   geom_vline(xintercept=-2, color="red") +
   theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
@@ -57,6 +60,8 @@ strong <- subset(res_df, lower_whisker < -2)
 strong$mutant <- rownames(strong)
 strong_noWT <- subset(strong, !grepl("_WT", mutant))
 strong_muts <- rownames(strong_noWT)
+med_muts <- c('R108G', 'H141I', 'Y148I', 'R108S', 'R108A', 'T34N', 'Y157A')
+strong_muts2 <- c(strong_muts, med_muts)
 
 # show what -2 cutoff for lower quartile looks like in distribution
 
@@ -75,4 +80,40 @@ ggplot(data=res_df, aes(x=upper_whisker)) +
   geom_vline(aes(xintercept=1.71), color="red", size=1) +
   labs(x="E-MAP score upper whisker") +
   theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+
+
+# look at number of outliers above upper whisker v below lower whisker
+
+below = 0
+above = 0
+for (m in unique(na_removed$mutant)) {
+  na_removed_m <- na_removed[which(na_removed$mutant == m),]
+  for (s in 1:nrow(na_removed_m)) {
+    if (na_removed_m[s,]$score < res_df[which(rownames(res_df) == m),]$lower_whisker) {
+      below = below + 1
+    }
+    if (na_removed_m[s,]$score > res_df[which(rownames(res_df) == m),]$upper_whisker) {
+      above = above + 1
+    }
+  }
+}
+
+frac_below = below/(below+above)
+frac_above = above/(below+above)
+
+
+# perform same analysis by gene rather than by mutation
+res <- boxplot(score ~ library_gene_name, data = na_removed)
+res_df <- as.data.frame(t(res$stats))
+rownames(res_df) <- res$names
+colnames(res_df) <- c("lower_whisker", "lower_quartile", "median", "upper_quartile", "upper_whisker")
+
+ggplot(data = res_df) +
+  geom_point(mapping = aes(x=lower_whisker, y=upper_whisker)) +
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  labs(title = "upper and lower whisker for e-map score by gene")
+
+
+
 

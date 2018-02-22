@@ -71,3 +71,17 @@ for (c in unique(final$Complex)) {
   ggsave(filename=paste(output_path, i, "_raw_emap", ".png", sep=""), width = 10, height = 10)
   i=i+1
 }
+
+# # look at titration curves for duplicated genes
+# output_path = "/Users/annie/emap/20180206/"
+# i=0
+# for (g in dup_genes) {
+#   ggplot(data = e.map[which(e.map$library_gene_name == g),]) +
+#     geom_point(mapping = aes(x=reorder(mutant, score), y=score, color=Name)) +
+#     labs(x="mutant", y="E-MAP score", title=g) +
+#     geom_hline(yintercept = 0) +
+#     theme(axis.text.x = element_text(angle = 90, hjust=1), panel.background = element_blank(), axis.line = element_line(colour = "black"))
+#   ggsave(filename=paste(output_path, g, "_raw_emap", ".png", sep=""), width = 10, height = 10)
+#   i=i+1
+# }
+

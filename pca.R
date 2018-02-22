@@ -6,7 +6,8 @@ install_github("ggbiplot", "vqv")
 library(ggbiplot)
 
 # output_path = "/Users/annie/emap/20180126/"
-output_path = "/Users/annie/emap/20180131/genes5/"
+#output_path = "/Users/annie/emap/20180131/genes5/"
+output_path = "/Users/annie/emap/20180208/stong_all"
 
 corr_of_corr = "/Users/annie/emap/corr_of_corr.RData"
 
@@ -27,8 +28,8 @@ sep_filtered_no_na <- filter(sep_filtered, !is.na(value))
 
 sep_filtered_no_na <- sep_filtered_no_na[which(!(sep_filtered_no_na$protein %in% dup_genes)),]
 
-# additional filter to include strong mutants only
-sep_filtered_no_na <- sep_filtered_no_na[which((sep_filtered_no_na$mutant %in% strong_muts)),]
+# additional filter to include strong mutants only v2 with more included
+sep_filtered_no_na <- sep_filtered_no_na[which((sep_filtered_no_na$mutant %in% strong_muts2)),]
 
 # additional filter to only include genes for which we have data
 genes_with_data <- c("RNA1", "SRM1", "MOG1", "YRB1", "PSE1")
@@ -88,6 +89,7 @@ for (c in unique(pca_input_2$cluster)) {
 # by gene
 # can we distinguish the different GO categories based on PCA?
 
+#cls <- unique(pca_input$cluster)
 cls <- c("budding", "cell cycle", "chromatin", 
          "cytoskeleton", "Golgi", "lipids", 
          "merged", "metabolic", "mitochondrion", 
@@ -115,7 +117,8 @@ for (i in 1:length(cls)) {
     theme(legend.direction = 'horizontal', 
           legend.position = 'top',
           panel.background = element_blank(), 
-          axis.line = element_line(colour = "black"))
+          axis.line = element_line(colour = "black")) #+
+    #ylim(-3, 3)
   #print(g)
   
   ggsave(filename=paste(output_path, "all_", cls[i], "_pca", ".png", sep=""), width = 10, height = 10)

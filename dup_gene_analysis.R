@@ -165,6 +165,3 @@ for (p in unique(all_no_na_dups_final$protein)) {
   ggsave(filename=paste(output_path, p, "_duplicate_histogram", ".png", sep=""), width = 10, height = 10)
 }
 
-#summary(all_no_na_dups_final[which(all_no_na_dups_final$protein == p & !(all_no_na_dups_final$partner %in% top$partner)),]$delta)
-
-
