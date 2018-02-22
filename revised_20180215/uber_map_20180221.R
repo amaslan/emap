@@ -55,6 +55,21 @@ ggplot(data = res_df, aes(x=lower_whisker, y=upper_whisker)) +
   theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   labs(title = "upper and lower whisker for e-map score from ubermap data; y=-x shown")
 
+ggplot(data = res_df) +
+  geom_point(mapping = aes(x=lower_quartile, y=upper_quartile)) +
+  geom_abline(slope=-1, intercept=0) +
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  labs(title = "upper and lower quartile for e-map score by mutant; y=-x shown")
+
+ggplot(data = res_df) +
+  geom_point(mapping = aes(x=upper_whisker, y=upper_quartile)) +
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  labs(title = "upper quartile and upper whisker for e-map score by mutant")
+
+ggplot(data = res_df) +
+  geom_point(mapping = aes(x=lower_whisker, y=lower_quartile)) +
+  theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+  labs(title = "lower quartile and lower whisker for e-map score by mutant")
 
 
 
