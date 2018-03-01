@@ -52,13 +52,23 @@ final <- sep_no_na
 
 # just look at strong muts
 #strong_muts1 <- c("D79A", "D79S", "H141E", "H141R", "K101R", "R108L", "R108Q", "R108Y",
-                  #"R112A", "R112S", "R78K", "T34E", "T34G", "T34Q") 
-#strong_muts1 <- c("R108L", "R108Q", "R108Y",
-                 # "T34E", "T34G", "T34Q") 
+                 # "R112A", "R112S", "R78K", "T34E", "T34G", "T34Q") 
+mut_filter <- c("R108L", "R108Q", "R108Y",
+                 "T34E", "T34G", "T34Q") 
 
-strong_muts1 <- c("D79A", "D79S", "H141E", "H141R",
-                  "R112A", "R112S") 
-final <- filter(final, mutant %in% strong_muts1)
+#strong_muts1 <- c("D79A", "D79S", "H141E", "H141R",
+                  #"R112A", "R112S") 
+
+# mut_filter <- c("R108L", "R108Q", "R108Y", 
+#                 "R108G",
+#                 "R108S", "R108A")
+
+# mut_filter <- c("D79A", "D79S", "H141E", "H141R", "K101R", "R108L", "R108Q", "R108Y", 
+#                   "R112A", "R112S", "R78K", "T34E", "T34G", "T34Q", "R108G", "H141I",
+#                   "Y148I", "R108S", "R108A", "T34N","Y157A")
+
+final <- filter(final, mutant %in% mut_filter)
+#final <- filter(final, grepl('T34', mutant))
 
 # partner vs. mutant - 1 per cluster
 i=1

@@ -12,14 +12,17 @@ library(rafalib)
 # SPECIFY FILE PATHS, ETC.
 
 # file paths
-corr_of_corr = "/Users/annie/emap/revised_20180215/GO_slims_corr_of_corr.RData"
-output_path = "/Users/annie/emap/revised_20180215/20180215/"
+corr_of_corr = "/Users/annie/emap/revised_20180215/random_corr_of_corr.RData"
+#corr_of_corr = "/Users/annie/emap/revised_20180215/GO_slims_corr_of_corr.RData"
+output_path = "/Users/annie/emap/revised_20180215/20180227/rand_cluster/"
+#output_path = "/Users/annie/emap/revised_20180215/20180222/"
+#output_path = "/Users/annie/emap/revised_20180215/20180215/"
 
 # mutants for which we have data
 mut_data <- c("GSP1-NAT", "T34E", "R108L", "H141V", "Q147E")
 
-# PPI partners 
-ppi = c("MOG1", "KAP104", "MTR10", "MSN5", "LOS1", "CRM1", "PSE1", "KAP95", "SRP1", "YRB1", "YRB2", "SRM1", "RNA1", "NTF2", "CSE1")
+# PPI partners - added NUP60
+ppi = c("MOG1", "KAP104", "MTR10", "MSN5", "LOS1", "CRM1", "PSE1", "KAP95", "SRP1", "YRB1", "YRB2", "SRM1", "RNA1", "NTF2", "CSE1", "NUP60")
 
 # method
 # look only at method corr_of_corr_no_na_no_mut
