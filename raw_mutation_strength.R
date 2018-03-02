@@ -6,7 +6,6 @@
 library(tidyverse)
 
 raw_emap = "/Users/annie/emap/June2016_Gsp1_E-MAP_data.RData"
-output_path = "/Users/annie/emap/20180130/"
 
 # load raw e-map data
 load(raw_emap)

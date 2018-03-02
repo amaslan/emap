@@ -1,5 +1,14 @@
 https://github.com/amaslan/emap
 ## summary of most useful scripts
+
+### emap/
+- interface_score_analysis.R - produces boxplots of correlation of correlations values separated by interface vs. not for each cluster. Also makes heatmaps of median difference in correlation of correlations by at interface or not and significance of difference. Interface defined from alanine scanning.
+- make_network_from_all_final.R - create cytoscape graph; older analysis so was original correlation of correlations values, excludes duplicate genes, and has arbitrary correlation of correlations value cutoff; calculates betweenness centrality and degree & summary statistics
+- make_network_from_all_final_strong.R - same as above but for strong mutants only and 5 genes (RNA1, SRM1, MOG1, YRB1, PSE1) only
+- raw_exploration.R - generate titration curves of raw e-map score vs. mutant plots (1 plot per complex). Only include complexes that have at least one protein with an E-MAP score outside of [-3, 2] and WT in [-3, 2]
+- raw_mutation_strength.R - generate whisker correlation plot and analysis to determine threshold for strong muts to consider in downstream analysis
+
+
 ### emap/revised_20180215/
 
 - cluster_size.R - calculate number of genes in each cluster for real and random clustering
@@ -15,12 +24,6 @@ https://github.com/amaslan/emap
 - ran_alignment.R - small script to get offset for Gsp1/Ran residues for yeast / human / canine
 - uber_map_20180221.R - produce whisker correlation plots for subset of ubermap data that overlaps the library our mutants were screened against (NB script currently takes random subset of 200 genes at a time so  R session doesn’t time out)
 - uber_map_not_merged_20180223.R - produce whisker correlation plots for all ubermap data (NB script currently takes random subset of 200 genes at a time so  R session doesn’t time out); produce separate plots for gene knockout, gene knock down, and temperature sensitive mutants
-### emap/
-- interface_score_analysis.R - produce boxplots of correlation of correlations values separated by interface vs. not for each cluster. Also makes heatmaps of median difference in correlation of correlations by at interface or not and significance of difference. Interface defined from alanine scanning.
-- make_network_from_all_final.R - create cytoscape graph; older analysis so was original correlation of correlations values, excludes duplicate genes, and has arbitrary correlation of correlations value cutoff; calculates betweenness centrality and degree & summary statistics
-- make_network_from_all_final_strong.R - same as above but for strong mutants only and 5 genes (RNA1, SRM1, MOG1, YRB1, PSE1) only
-- raw_exploration.R - generate titration curves of raw e-map score vs. mutant plots (1 plot per complex). Only include complexes that have at least one protein with an E-MAP score outside of [-3, 2] and WT in [-3, 2]
-- raw_mutation_strength.R - generate whisker correlation plot and analysis to determine threshold for strong muts to consider in downstream analysis
 
-### emap/Ran_structures
+### emap/Ran_structures/
 - filter_contacts.R - filter contacts to just get interfaces for Ran with binding partners
