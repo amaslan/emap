@@ -1,7 +1,4 @@
-# Generate plots of correlation of correlations for:
-#    1. protein vs. mutant - 1 per cluster
-#    2. cluster vs. mutant - 1 per protein
-#    3. protein-cluster vs. mutant 
+# Cluster mutations - dendrogram & MDS for mutant pairs
 
 library(tidyverse)
 library(gplots)
@@ -51,26 +48,18 @@ ppi_only <- filter(sep_no_na, protein %in% ppi)
 final <- sep_no_na
 
 # just look at strong muts
-#strong_muts1 <- c("D79A", "D79S", "H141E", "H141R", "K101R", "R108L", "R108Q", "R108Y",
-                 # "R112A", "R112S", "R78K", "T34E", "T34G", "T34Q") 
+
 mut_filter <- c("R108L", "R108Q", "R108Y",
                  "T34E", "T34G", "T34Q") 
-
-#strong_muts1 <- c("D79A", "D79S", "H141E", "H141R",
-                  #"R112A", "R112S") 
-
-# mut_filter <- c("R108L", "R108Q", "R108Y", 
-#                 "R108G",
-#                 "R108S", "R108A")
 
 # mut_filter <- c("D79A", "D79S", "H141E", "H141R", "K101R", "R108L", "R108Q", "R108Y", 
 #                   "R112A", "R112S", "R78K", "T34E", "T34G", "T34Q", "R108G", "H141I",
 #                   "Y148I", "R108S", "R108A", "T34N","Y157A")
 
 final <- filter(final, mutant %in% mut_filter)
-#final <- filter(final, grepl('T34', mutant))
 
 # partner vs. mutant - 1 per cluster
+# calculate all pairwise distances and store in m
 i=1
 m <- c()
 for (c in unique(final$cluster)) {
@@ -87,30 +76,30 @@ for (c in unique(final$cluster)) {
 }
 
 names(m) <- c("p1", "p2", "distance", "cluster")
-
 m$pair <- paste(m$p1, "-", m$p2)
 
+# now across all 34 clusters for each mutant pair calculate distance
 mat <- spread(m, cluster, distance)
 rownames(mat) <- mat[,c(3)]
 mat <- mat[,!names(mat) %in% c('p1', 'p2', 'pair')]
 mat <- data.matrix(mat)
 d <- dist(mat)
 
+# plot dendrogram of mutant pairs
 hc <- hclust(d)
 plot(hc)
 
+# MDS of mutant pairs
 fit <- cmdscale(d, eig=TRUE, k=2)
-fit
-
+#fit
 x <- fit$points[,1]
 y <- fit$points[,2]
 plot(x, y, xlab="coordinate 1", ylab='coordinate 2', main='MDS', type='n')
 text(x, y, labels = row.names(mat), cex=.5)
 
-
+# try showing as heatmap as well
 f <- data.frame(t(combn(rownames(mat),2)), as.numeric(d))
 names(f) <- c("pair1", "pair2", "distance")
-
 
 ggplot(f, aes(x=pair1, y=distance)) +
   geom_boxplot(colour = "#1F3552", fill = "#4271AE",
@@ -118,13 +107,10 @@ ggplot(f, aes(x=pair1, y=distance)) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
-
-
 dev.off()
 hmcol <- colorRampPalette(brewer.pal(9, "RdYlBu"))(100)
 gplots::heatmap.2(as.matrix(d), 
                   trace="none",
                   col=hmcol,
-                  #margins=c(1,1),
                   key.title=NA,
                   main=id)

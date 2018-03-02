@@ -1,3 +1,7 @@
+# generate simple histograms to motivate why we need correlation 
+# of correlations in addition to just raw E-MAP score using
+# MOG1 as an example
+
 mog1 <- all[which(all$library_gene_name == 'MOG1'),]
 ggplot(data=mog1, aes(x=score)) +
   geom_histogram(aes(y=..density..), color="black", fill="white") +

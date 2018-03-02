@@ -1,4 +1,4 @@
-# determine number of genes per cluster
+# determine number of genes per cluster for real and random clusters
 
 library(tidyverse)
 

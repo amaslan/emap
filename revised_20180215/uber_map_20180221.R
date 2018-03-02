@@ -1,5 +1,7 @@
-# see if y=-x follows for upper vs. lower whisker for uber map data
-# or if it's unique to our system because it's a switch
+# whisker correlation plots for subset of ubermap data that overlaps
+# the library our mutants were screened against
+# NB. script takes subset of 200 genes at a time so R session doesn't 
+# time out
 
 library(tidyverse)
 
@@ -39,7 +41,7 @@ keep_500_genes <- unique(keep_500$Gene_uniq)
 # this filtering results in keeping 97% of the data
 final <- filter(uber_no_na, Gene_uniq %in% keep_500_genes)
 
-#sub <- filter(final, Gene_uniq %in% unique(final$Gene_uniq)[1:200])
+# taking 200 randomly at a time so R session doesn't timeout
 s <- sample(keep_500_genes, 200)
 sub <- filter(final, Gene_uniq %in% s)
   

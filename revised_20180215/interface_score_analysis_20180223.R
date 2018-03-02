@@ -1,5 +1,6 @@
-# boxplots that separate correlation of correlations values by 
-# where mut is at interface or not. also produces heatmaps.
+# analysis of correlation of correlations values separated by interface
+# or not as defined in interfaces_residues vector created in 
+# /emap/Ran_structures/filter_contacts.R so must run that script first
 
 library(tidyverse)
 library(gplots)
@@ -8,47 +9,12 @@ library(rafalib)
 
 # plot the various metrics in all df
 
-interface_def = "/Users/annie/emap/alanine_scanning.txt"
-output_path = "/Users/annie/emap/20180213/"
+output_path = "/Users/annie/emap/revised_20180215/20180223/"
+all_rds = "/Users/annie/emap/revised_20180215/all.rds"
 
-# interface: (1) index	(2) yeast_index	(3) yeast_wt_aa	(4) pdb	(5) protein	(6) structure	(7) pdb_res_num	(8) pdb_wt_aa	(9) score
-# e.g.: 1    34          34           T  3a6p    MSN5  MSN5(3a6p)          32       THR 0.000
-# just care about index, protein, score
-interface <- read.table(interface_def, 
-                        header = TRUE,
-                        sep="\t",
-                        col.names=c("index", "yeast_index", "yeast_wt_aa", "pdb", "protein", "structure", 
-                                    "pdb_res_num", "pdb_wt_aa", "score"),
-                        fill=TRUE,
-                        quote="")
-keep_interface = c("index", "protein", "score")
-interface_short <- interface[names(interface) %in% keep_interface]
-interface_short$index_protein <- paste(interface_short$index, "-", interface_short$protein)
-
-# filter
-# interface.score +/-0.5 cutoff
-ggplot(data=interface_short, aes(x=score)) +
-  geom_histogram(aes(y=..density..), color="black", fill="white", bins=100) +
-  geom_density(alpha=.2, fill="#FF6666") +
-  geom_vline(aes(xintercept=mean(interface_short$score)), color="blue", linetype="dashed", size=1) +
-  labs(x="interface score") +
-  theme(panel.background = element_blank(), axis.line = element_line(colour = "black"))
-
-# this filter results in keeping 14.2% of the data
-# residue is at interface with a given protein if it's in interface_short_filtered
-interface_short_filtered <- filter(interface_short, score > 0.5 | score < -0.5)
-mog1_residues <- c(97, 108, 132, 134, 136, 128, 133, 138)
-interface_mog1 <- data.frame(matrix(ncol = 4, nrow = length(mog1_residues)))
-colnames(interface_mog1) <- colnames(interface_short_filtered)
-interface_mog1$index <- mog1_residues
-interface_mog1$protein <- "MOG1"
-interface_mog1$score <- NA
-interface_mog1$index_protein <- paste(interface_mog1$index, "-", interface_mog1$protein)
-interface_short_filtered <- rbind(interface_short_filtered, interface_mog1)
 
 # for given cluster - protein, boxplot comparison of correlation of correlations whether at interface or not
 # determine distribution of correlation of correlations
-all_rds = "/Users/annie/emap/all.rds"
 all = readRDS(all_rds)
 
 # remove complex and interface scores info so don't have duplicate correlation of correlation entries
@@ -59,7 +25,7 @@ all <- all[!duplicated(all),]
 all$corr.value <- as.numeric(all$corr.value)
 all_no_na <- filter(all, !is.na(corr.value))
 
-all_no_na$interface <- all_no_na$residue_protein %in% interface_short_filtered$index_protein
+all_no_na$interface <- all_no_na$residue %in% interface_residues
 
 proteins <- c("PSE1", "RNA1", "SRM1", "YRB1", "MOG1")
 
@@ -92,12 +58,8 @@ for (p in proteins) {
 # add heatmap of 5 genes vs clusters color by no diff, higher, lower 
 # by median or statistical significance value between them
 
-plot_heatmap <- function(df, id) {
-  # create matrix for heatmap plot
-  #mat <- spread(df, cluster, delta)
-  #mat <- spread(df, cluster, med.x)
-  #mat <- spread(df, cluster, med.y)
-  mat <- spread(df, cluster, pval)
+plot_heatmap <- function(df, id, v) {
+  mat <- spread(df, cluster, v)
   
   rownames(mat) <- mat[,c(1)]
   mat <- mat[,-1]
@@ -131,13 +93,13 @@ m_diff <- merge(m_true, m_false, by=c('protein', 'cluster'))
 m_diff$delta <- m_diff$med.x - m_diff$med.y
   
 s <- m_diff[,c('cluster', 'protein', 'delta')]
-plot_heatmap(s, 'interface_heatmap_diff_med')
+plot_heatmap(s, 'interface_heatmap_diff_med', 'delta')
 
 s <- m_diff[,c('cluster', 'protein', 'med.x')]
-plot_heatmap(s, 'interface_heatmap_interfaceT')
+plot_heatmap(s, 'interface_heatmap_interfaceT', 'med.x')
 
 s <- m_diff[,c('cluster', 'protein', 'med.y')]
-plot_heatmap(s, 'interface_heatmap_interfaceF')
+plot_heatmap(s, 'interface_heatmap_interfaceF', 'med.y')
 
 
 # statistical significance value instead of just difference in median
@@ -169,5 +131,5 @@ for (p in proteins) {
   }
 }
 
-plot_heatmap(df, 'interface_heatmap_statistical_signficance')
+plot_heatmap(df, 'interface_heatmap_statistical_signficance', 'pval')
 

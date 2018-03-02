@@ -10,23 +10,19 @@ library(rafalib)
 
 ######################################
 # SPECIFY FILE PATHS, ETC.
+# must update for real or random by specifying which corr_of_corr
 
 # file paths
 corr_of_corr = "/Users/annie/emap/revised_20180215/random_corr_of_corr.RData"
 #corr_of_corr = "/Users/annie/emap/revised_20180215/GO_slims_corr_of_corr.RData"
 output_path = "/Users/annie/emap/revised_20180215/20180227/rand_cluster/"
 #output_path = "/Users/annie/emap/revised_20180215/20180222/"
-#output_path = "/Users/annie/emap/revised_20180215/20180215/"
-
-# mutants for which we have data
-mut_data <- c("GSP1-NAT", "T34E", "R108L", "H141V", "Q147E")
 
 # PPI partners - added NUP60
 ppi = c("MOG1", "KAP104", "MTR10", "MSN5", "LOS1", "CRM1", "PSE1", "KAP95", "SRP1", "YRB1", "YRB2", "SRM1", "RNA1", "NTF2", "CSE1", "NUP60")
 
 # method
-# look only at method corr_of_corr_no_na_no_mut
-# will also be interested in dot_product_no_na_no_mut
+# look only at method corr_of_corr_no_mut
 method = "corr_of_corr_no_mut"
 
 ######################################
@@ -44,16 +40,11 @@ sep <- result_m %>%
 sep$value <- as.numeric(sep$value)
 sep_no_na <- filter(sep, !is.na(value))
 
-# save data as csv for input to python code for MDS
-write.table(sep_no_na, file=paste(output_path, method, "_sep_no_na.csv"), quote=FALSE, sep=",", row.names=FALSE)
-
-# filter to only include PPI partners and mutants for which we have data
+# filter to only include PPI partners
 ppi_only <- filter(sep_no_na, protein %in% ppi)
-mut_ppi_only <- filter(ppi_only, mutant %in% mut_data)
 
 # remove grouped clusters
 final <- filter(ppi_only, grepl("_GO_", cluster))
-#final <- filter(ppi_only, !grepl("_GO_", cluster))
 
 ######################################
 # PLOT

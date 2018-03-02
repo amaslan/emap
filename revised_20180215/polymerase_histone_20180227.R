@@ -1,11 +1,15 @@
 # see if y=-x follows for upper vs. lower whisker for polymerase 
-# and histone or if it's unique to our system because it's a switch
+# and histone or if it's unique to our system
 
 library(tidyverse)
 
 # this is the complete ubermap 
 pol_emap = "/Users/annie/emap/revised_20180215/polymerase_emap.csv"
 hist_emap = "/Users/annie/emap/revised_20180215/histones_pE-MAPs.txt"
+
+####################################################################
+# update which 'res <-' line to run based on whether lookint at 
+# polymerase or histone data
 
 # polymerase
 pol <- read.csv(pol_emap)
@@ -21,7 +25,9 @@ hist <- read.table(hist_emap,
 hist_no_na <- filter(hist, !is.na(score))
 res <- boxplot(score ~ Gene, data = hist_no_na)
 
-
+####################################################################
+# don't need to change anything below here.
+# generates boxplots and scatter plots for whiskers & quartiles
 
 res_df <- as.data.frame(t(res$stats))
 rownames(res_df) <- res$names
@@ -34,10 +40,7 @@ ggplot(data = res_df, aes(x=lower_whisker, y=upper_whisker)) +
   ylim(0, 8) +
   xlim(-8, 0) +
   theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-  #labs(title = "upper and lower whisker for e-map score from polymerase pt mut data; y=-x shown")
-  labs(title = "upper and lower whisker for e-map score from histone pt mut data; y=-x shown")
-
-
+  labs(title = "upper and lower whisker for e-map score; y=-x shown")
 
 ### accessory plots
 ggplot(data = res_df) +

@@ -69,7 +69,9 @@ for ( i in seq_along(clusters) ) {
   by_cluster_df <- clusters_df[clusters_df$cluster == clusters[i],]
   by_cluster_genes <- as.character(unique(by_cluster_df$protein))
   
-  # required data format is dataframe with 3 variables; variables 1&2 correspond to interactions; variable 3 is weight of interaction
+  # required data format is dataframe with 3 variables
+  # variables 1&2 correspond to interactions
+  # variable 3 is weight of interaction
   by_cluster_F <- by_cluster_df[,c('mutant', 'protein', 'corr.value')]
   
   # make it into a graph object
@@ -98,64 +100,61 @@ for ( i in seq_along(clusters) ) {
   # Calculate Dice similarities between all pairs of nodes
   dsAll <- similarity.dice(by_cluster_F.network, vids = V(by_cluster_F.network), mode = "all")
   
-  # ######################################################################
-  # 
-  # ##### make node attributes - is it mutant or gene
-  # by_cluster_F.network <- set_vertex_attr( by_cluster_F.network, 
-  #                                            'label', index = V(by_cluster_F.network)$name %in% by_cluster_genes, value = "gene")
-  # by_cluster_F.network <- set_vertex_attr( by_cluster_F.network, 
-  #                                            'label', index = (! V(by_cluster_F.network)$name %in% by_cluster_genes), value = "mutant")
-  # 
-  # # asign edge weights based on correlation of correlations
-  # for (j in 1:nrow(by_cluster_F)) {
-  #   igraph::E(by_cluster_F.network)[
-  #     as.character(by_cluster_F$mutant) %--% as.character(by_cluster_F$protein)]$weight <- 
-  #     as.numeric(by_cluster_F$corr.value)
-  # }  ### %--% is a special operator from igraph
-  # 
-  # by_cluster_F.network <- set.vertex.attribute(by_cluster_F.network, "degree", index = V(by_cluster_F.network), value = degAll)
-  # by_cluster_F.network <- set.vertex.attribute(by_cluster_F.network, "betweenness", index = V(by_cluster_F.network), value = betAll.norm)
-  # 
-  # # make it into a graphNEL object
-  # by_cluster_F.cyt <- igraph:::as_graphnel(by_cluster_F.network)
-  # 
-  # by_cluster_F.cyt <- RCy3::initNodeAttribute(by_cluster_F.cyt, 'degree', 'numeric', 0) 
-  # by_cluster_F.cyt <- RCy3::initNodeAttribute(by_cluster_F.cyt, 'betweenness', 'numeric', 0) 
-  # by_cluster_F.cyt <- RCy3::initNodeAttribute(by_cluster_F.cyt, 'label', 'char', 'none') 
-  # by_cluster_F.cyt <- RCy3::initNodeAttribute(by_cluster_F.cyt, 'name', 'char', 'GENE/MUT')
-  # by_cluster_F.cyt <- RCy3::initEdgeAttribute (by_cluster_F.cyt, "weight", 'integer', 0)
-  # by_cluster_F.cyt <- RCy3::initEdgeAttribute (by_cluster_F.cyt, "corr.value", 'integer', 2)
-  # 
-  # gDCW <- RCy3::CytoscapeWindow(clusters[i], graph = by_cluster_F.cyt, overwriteWindow = TRUE)
-  # 
-  # RCy3::displayGraph(gDCW)
-  # 
-  # RCy3::setNodeAttributesDirect(gDCW, 'label', 'char', igraph::V(by_cluster_F.network)$name, igraph::V(by_cluster_F.network)$label)
-  # RCy3::setNodeAttributesDirect(gDCW, 'name', 'char', igraph::V(by_cluster_F.network)$name, igraph::V(by_cluster_F.network)$name)
-  # RCy3::setEdgeAttributesDirect(gDCW, 'weight', 'integer', as.character (RCy3::cy2.edge.names (gDCW@graph)), graph::edgeData(by_cluster_F.cyt, as.character(by_cluster_F$mutant), as.character(by_cluster_F$protein), 'weight'))
-  # RCy3::setEdgeAttributesDirect(gDCW, 'corr.value', 'numeric', as.character (RCy3::cy2.edge.names (gDCW@graph)), graph::edgeData(by_cluster_F.cyt, as.character(by_cluster_F$mutant), as.character(by_cluster_F$protein), 'corr.value'))
-  # 
-  # setNodeAttributesDirect(gDCW, 'degree', 'numeric', igraph::V(by_cluster_F.network)$name, igraph::V(by_cluster_F.network)$degree)
-  # setNodeAttributesDirect(gDCW, 'betweenness', 'numeric', igraph::V(by_cluster_F.network)$name, igraph::V(by_cluster_F.network)$betweenness)
-  # 
-  # cy <- RCy3::CytoscapeConnection()
-  # hlp <-RCy3::getLayoutNames(cy)
-  # getLayoutPropertyNames(cy, hlp[7])
-  # RCy3::setLayoutProperties (gDCW, hlp[7], list (numIterations = 1000))
-  # RCy3::layoutNetwork(gDCW, hlp[7])
-  # 
-  # setNodeColorRule(gDCW, 'label', c("protein", "mutant"), c('#FF7F50', '#F5DEB3'), mode = 'lookup')
-  # #setNodeShapeRule(gDCW, 'label', c("protein", "mutant"), c('ellipse', 'triangle'))#, mode = 'lookup')
-  # #setNodeColorRule(gDCW, 'degree', c(min(degAll), mean(degAll), max(degAll)), c('#F5DEB3', '#FFA500', '#FF7F50', '#FF4500', '#FF0000'), mode = 'interpolate')
-  # setNodeSizeRule(gDCW, 'betweenness', c(min(betAll.norm), mean(betAll.norm), max(betAll.norm)), c(30, 45, 60, 80, 100), mode = 'interpolate')
-  # 
-  # 
-  # # And edges:
-  # setDefaultBackgroundColor(gDCW, '#FFFFFF')
-  # RCy3::setDefaultNodeColor(gDCW, '#87CEFA')
-  # RCy3::setDefaultNodeLabelColor(gDCW, '#000000')
-  # file.name <- paste(clusters[i], "_network")
-  # saveImage(gDCW, file.name, image.type = 'pdf')
+  ######################################################################
+
+  ##### make node attributes - is it mutant or gene
+  by_cluster_F.network <- set_vertex_attr( by_cluster_F.network,
+                                             'label', index = V(by_cluster_F.network)$name %in% by_cluster_genes, value = "gene")
+  by_cluster_F.network <- set_vertex_attr( by_cluster_F.network,
+                                             'label', index = (! V(by_cluster_F.network)$name %in% by_cluster_genes), value = "mutant")
+
+  # asign edge weights based on correlation of correlations
+  for (j in 1:nrow(by_cluster_F)) {
+    igraph::E(by_cluster_F.network)[
+      as.character(by_cluster_F$mutant) %--% as.character(by_cluster_F$protein)]$weight <-
+      as.numeric(by_cluster_F$corr.value)
+  }  ### %--% is a special operator from igraph
+
+  by_cluster_F.network <- set.vertex.attribute(by_cluster_F.network, "degree", index = V(by_cluster_F.network), value = degAll)
+  by_cluster_F.network <- set.vertex.attribute(by_cluster_F.network, "betweenness", index = V(by_cluster_F.network), value = betAll.norm)
+
+  # make it into a graphNEL object
+  by_cluster_F.cyt <- igraph:::as_graphnel(by_cluster_F.network)
+
+  by_cluster_F.cyt <- RCy3::initNodeAttribute(by_cluster_F.cyt, 'degree', 'numeric', 0)
+  by_cluster_F.cyt <- RCy3::initNodeAttribute(by_cluster_F.cyt, 'betweenness', 'numeric', 0)
+  by_cluster_F.cyt <- RCy3::initNodeAttribute(by_cluster_F.cyt, 'label', 'char', 'none')
+  by_cluster_F.cyt <- RCy3::initNodeAttribute(by_cluster_F.cyt, 'name', 'char', 'GENE/MUT')
+  by_cluster_F.cyt <- RCy3::initEdgeAttribute (by_cluster_F.cyt, "weight", 'integer', 0)
+  by_cluster_F.cyt <- RCy3::initEdgeAttribute (by_cluster_F.cyt, "corr.value", 'integer', 2)
+
+  gDCW <- RCy3::CytoscapeWindow(clusters[i], graph = by_cluster_F.cyt, overwriteWindow = TRUE)
+
+  RCy3::displayGraph(gDCW)
+
+  RCy3::setNodeAttributesDirect(gDCW, 'label', 'char', igraph::V(by_cluster_F.network)$name, igraph::V(by_cluster_F.network)$label)
+  RCy3::setNodeAttributesDirect(gDCW, 'name', 'char', igraph::V(by_cluster_F.network)$name, igraph::V(by_cluster_F.network)$name)
+  RCy3::setEdgeAttributesDirect(gDCW, 'weight', 'integer', as.character (RCy3::cy2.edge.names (gDCW@graph)), graph::edgeData(by_cluster_F.cyt, as.character(by_cluster_F$mutant), as.character(by_cluster_F$protein), 'weight'))
+  RCy3::setEdgeAttributesDirect(gDCW, 'corr.value', 'numeric', as.character (RCy3::cy2.edge.names (gDCW@graph)), graph::edgeData(by_cluster_F.cyt, as.character(by_cluster_F$mutant), as.character(by_cluster_F$protein), 'corr.value'))
+
+  setNodeAttributesDirect(gDCW, 'degree', 'numeric', igraph::V(by_cluster_F.network)$name, igraph::V(by_cluster_F.network)$degree)
+  setNodeAttributesDirect(gDCW, 'betweenness', 'numeric', igraph::V(by_cluster_F.network)$name, igraph::V(by_cluster_F.network)$betweenness)
+
+  cy <- RCy3::CytoscapeConnection()
+  hlp <-RCy3::getLayoutNames(cy)
+  getLayoutPropertyNames(cy, hlp[7])
+  RCy3::setLayoutProperties (gDCW, hlp[7], list (numIterations = 1000))
+  RCy3::layoutNetwork(gDCW, hlp[7])
+
+  setNodeColorRule(gDCW, 'label', c("protein", "mutant"), c('#FF7F50', '#F5DEB3'), mode = 'lookup')
+  setNodeSizeRule(gDCW, 'betweenness', c(min(betAll.norm), mean(betAll.norm), max(betAll.norm)), c(30, 45, 60, 80, 100), mode = 'interpolate')
+
+  # And edges:
+  setDefaultBackgroundColor(gDCW, '#FFFFFF')
+  RCy3::setDefaultNodeColor(gDCW, '#87CEFA')
+  RCy3::setDefaultNodeLabelColor(gDCW, '#000000')
+  file.name <- paste(clusters[i], "_network")
+  saveImage(gDCW, file.name, image.type = 'pdf')
 }
 
 

@@ -1,5 +1,6 @@
-# see if y=-x follows for upper vs. lower whisker for uber map data
-# or if it's unique to our system because it's a switch
+# whisker correlation plots for all ubermap data
+# NB script currently takes random subset of 200 genes 
+# at a time so  R session doesn’t time out
 
 library(tidyverse)
 
@@ -19,7 +20,6 @@ keep <- uber_no_na %>%
   summarize(total.count = n())
 
 keep_500 <- filter(keep, total.count > 500)
-# 4456 genes initially; filtering at >500 for non-NA score count removes 311
 length(unique(uber_no_na$query_uniq))
 length(unique(keep_500$query_uniq))
 
@@ -34,10 +34,7 @@ keep_500_genes <- unique(keep_500$query_uniq)
 
 final <- filter(uber_no_na, query_uniq %in% keep_500_genes)
 
-#s <- sample(keep_500_genes, 200)
-#sub <- filter(final, query_uniq %in% s)
-
-# just look at point mutations
+# just look at gene knock outs
 subPT <- filter(final, !grepl('_damp|_ts', query_uniq, ignore.case = TRUE))
 keep_pt <- unique(subPT$query_uniq)
 s <- sample(keep_pt, 200)
@@ -56,7 +53,6 @@ ggplot(data = res_df, aes(x=lower_whisker, y=upper_whisker)) +
   xlim(-8, 0) +
   theme(panel.background = element_blank(), axis.line = element_line(colour = "black")) +
   labs(title = "upper and lower whisker for e-map score from ubermap data; y=-x shown")
-
 
 ### accessory plots
 ggplot(data = res_df) +

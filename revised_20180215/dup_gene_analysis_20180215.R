@@ -1,11 +1,11 @@
 # analyze correlation of correlations differences across experiments
-# for the 18 genes with 2-6 experiments. for subsequent analysis
-# we take the correlation of correlations value with the largest
-# absolute value
+# for the 28 genes with multiple experiments. for subsequent analysis
+# we consider each construct separately.
 
 library(tidyverse)
 
 # determine distribution of correlation of correlations
+# read in from all.rds file that has all combined data
 all_rds = "/Users/annie/emap/revised_20180215/all.rds"
 output_path = "/Users/annie/emap/revised_20180215/20180215/"
 
@@ -39,6 +39,7 @@ by_gene_mut_cluster_dup_summary <- dplyr::summarize(by_gene_mut_cluster,
 
 final <- filter(by_gene_mut_cluster_dup_summary, total.count > 1)
 
+# calculate summary statistics from differences in correlation of correlations by genes
 by_gene <- group_by(final, protein)
 summary_gene <- dplyr::summarize(by_gene, 
                               mean.diff = mean(diff),
@@ -46,7 +47,8 @@ summary_gene <- dplyr::summarize(by_gene,
                               min.diff = min(diff),
                               max.diff = max(diff))
 
-write.table(summary_gene, file=paste(output_path, "duplicate_summary_by_gene.csv"), quote=FALSE, sep=",", row.names=FALSE)
+write.table(summary_gene, file=paste(output_path, "duplicate_summary_by_gene.csv"), 
+            quote=FALSE, sep=",", row.names=FALSE)
 
 by_mutant <- group_by(final, mutant)
 summary_mutant <- dplyr::summarize(by_mutant, 
@@ -96,6 +98,7 @@ quantile(final$diff)
 # show what the different experiments are, e.g. DAMP, temperature
 # use strongest corr of corr unless check to see if construct with greatest strength
 # varies by mutant then keep both and treat as different genes
+# conclustion: treat as different genes
 
 output_path = "/Users/annie/emap/20180126/"
 
